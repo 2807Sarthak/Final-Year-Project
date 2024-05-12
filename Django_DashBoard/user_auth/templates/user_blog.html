@@ -1,0 +1,22 @@
+{% extends 'navbar.html' %}
+
+{% block content %}
+<div class="container">
+    <div id="logo">
+        <main>
+            <section class="hero text-light text-center">
+                <div class="container-sm">
+                    <div class="hero-inner">
+                        <h1 class="hero-title h2-mobile mt-0 is-revealing">Django project for Mysql DB</h1>
+                        <p class="hero-paragraph is-revealing">All of Your Blogs</p>
+                        
+                    </div>
+                </div>
+            </section>
+        </main>
+        <div class="tagline">Doctor: {{request.user}}</div>
+
+    </div>
+    <div id="line"></div>
+</div>
+{% endblock %}

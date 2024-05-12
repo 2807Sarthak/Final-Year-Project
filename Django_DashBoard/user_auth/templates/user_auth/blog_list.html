@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>List of Blogs</title>
+</head>
+<body>
+    <h1>List of Blogs</h1>
+    
+    <ul>
+        {% for blog in blogs %}
+            <li>
+                <h2><a href="{% url 'blog_detail' slug=blog.pk %}">{{ blog.name }}</a></h2>
+                <p>Author: {{ blog.author }}</p>
+                <p>Category: {{ blog.category }}</p>
+                <p>Created: {{ blog.created }}</p>
+            </li>
+        {% endfor %}
+    </ul>
+    
+    <a href="{% url 'create_blog' %}">Create a new blog</a>
+</body>
+</html>

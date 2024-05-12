@@ -1,0 +1,29 @@
+{% load static %}
+
+<!-- this html is for side bar  -->
+
+<div id="secondary" class="widget-area col-sm-12 col-md-4" role="complementary">
+    <div class="inner">
+
+
+
+        <aside id="activello-cats-2" class="widget activello-cats">
+            <h3 class="widget-title">Categories</h3>
+            <div class="cats-widget">
+                <ul>
+
+                    <li class="cat-item cat-item-38"><a href="{% url 'home' %}">
+                            All</a> <span></span>
+                    </li>
+                    {% for category in categorys %}
+                    <li class="cat-item cat-item-38"><a href="{% url 'category' %}?q={{category}}">
+                            {{category}}</a> 
+                    </li>
+                    {% endfor %}
+
+                </ul>
+            </div>
+        </aside>
+
+    </div>
+</div>

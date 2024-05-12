@@ -1,0 +1,36 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+<div class="text-center mt-3">
+  <span class="bg-secondary p-1 px-4 rounded text-white">Doctor</span>
+  <h5 class="mt-2 mb-0">{{ user.username }}</h5>
+  <span>&nbsp;</span>
+
+  <div class="px-4 mt-1">
+
+
+
+
+  <h2>Welcome, {{ user.username }}!</h2>
+  <h3>To Your Doctor Dashboard</h3>
+  <p>Profile Type: Doctor</p>
+  <p>First Name: {{ user.first_name }}</p>
+  <p>Last Name: {{ user.last_name }}</p>
+  <p>Email: {{ user.email }}</p>
+  <p>Address: {{ user.address_line1 }},&nbsp;{{ user.city }},&nbsp;{{ user.pincode }}</p>
+</div>
+
+
+<div class="buttons">
+
+  <button onclick ="window.location.href='{% url 'logout' %}';" class="btn btn-outline-primary px-4 ms-3">Logout</button>
+  <button onclick ="window.location.href='{% url 'self_blog' %}';" class="btn btn-outline-primary px-4 ms-3">Your Blogs</button>
+  <button onclick ="window.location.href='{% url 'home' %}';" class="btn btn-primary px-4 ms-3">Home</button>
+  <button onclick ="window.location.href='{% url 'appointment' %}';" class="btn btn-primary px-4 ms-3">My Appointments</button>
+  
+
+</div>
+
+
+</div>
+{% endblock %}

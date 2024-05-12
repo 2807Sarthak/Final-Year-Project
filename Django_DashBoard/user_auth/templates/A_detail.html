@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <body
+	class="post-template-default single single-post postid-1016 single-format-standard wp-custom-logo has-sidebar-right elementor-default elementor-kit-2114">
+
+	{% include 'intro.html' %}
+
+	<div id="content" class="site-content">
+		<div class="top-section">
+		</div>
+		<div class="container main-content-area">
+			<div class="cat-title">
+				<ul class="post-categories">
+					<li> Appointment
+					</li>
+				</ul>
+			</div>
+			<div class="row">
+				<div class="main-content-inner col-sm-12 col-md-8 no-sidebar">
+
+					<div id="primary" class="content-area">
+						<main id="main" class="site-main" role="main">
+							<article id="post-1016"
+								class="post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+								<div class="blog-item-wrap">
+									<div class="post-inner-content" >
+										<div style="
+									box-shadow: 0 5px 10px rgb(0 0 0 / 0.2);
+																		padding-top: 30px;
+																		padding-left: 30px;
+																		padding-right: 30px;
+																		padding-bottom: 30px;
+																		">
+											<header class="entry-header page-header">
+                            <h1 class="entry-title">Appointment for Doctor: {{appointment.doctor}} </h1>
+									
+                            </header>
+                        
+                            <div class="entry-content">
+                                <p>
+                                    <center>Patient: {{appointment.patient}}</center>
+                                </p>
+                                <p>
+                                    <center>Required Speciality: {{appointment.required_speciality}}</center>
+                                </p>
+                                <p>
+                                    <center>Appointment Date: {{appointment.chosen_date}}</center>
+                                </p>
+                                <p>
+                                    <center>Start Time: {{appointment.chosen_time}}</center>
+                                </p>
+                                <p>
+                                    <center>End Time: {{appointment.end_time}}</center>
+                                </p>
+                                <p>
+                                    <center>Google Calendar Event: <a href="{{ appointment.google_url }}"> URL </center>
+                                </p>
+
+                            </div>
+                        </div>
+
+                        <div class="entry-content">
+
+                            <div class="read-more">
+
+                            </div>
+                        </div>
+
+
+    
+
+
+                    </div>
+                </div>
+            </article>
+        </main>
+    </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+{% endblock %}
+                        

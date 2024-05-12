@@ -1,0 +1,33 @@
+<!-- this html is for footer extension for every other page -->
+
+<!-- this is footer -->
+
+<div id="footer-area">
+    <footer id="colophon" class="site-footer" role="contentinfo">
+        <div class="site-info container">
+            <div class="row">
+
+                
+            </div>
+        </div>
+        <button class="scroll-to-top"><i class="fa fa-angle-up"></i></button>
+    </footer>
+    
+    <!-- end of footer -->
+
+</div>
+</div>
+<script type="text/javascript">
+    jQuery(document).ready(function ($) {
+        if ($(window).width() >= 767) {
+            $('.navbar-nav > li.menu-item > a').click(function () {
+                if ($(this).attr('target') !== '_blank') {
+                    window.location = $(this).attr('href');
+                } else {
+                    var win = window.open($(this).attr('href'), '_blank');
+                    win.focus();
+                }
+            });
+        }
+    });
+</script>

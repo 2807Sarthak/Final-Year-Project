@@ -1,0 +1,46 @@
+{% extends 'form.html' %}
+
+{% block content %}
+
+<form class="login100-form validate-form" method="post" action="{% url 'signup' %}" enctype="multipart/form-data">
+  {% csrf_token %}
+  <span class="login100-form-title p-b-49">
+    SignUp
+  </span>
+  {% for field in form %}
+  <div class="wrap-input100 validate-input m-b-23" data-validate="required">
+    {% if field.field.choices %}
+    <select class="input100" name="{{ field.name }}" id="{{ field.id_for_label }}">
+      <option value="" disabled selected>{{ field.field.widget.attrs.placeholder }}</option>
+      {% for value, label in field.field.choices %}
+      <option value="{{ value }}" {% if field.value == value %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+
+    {% else %}
+    <input class="input100" name={{field.name}} type="{{ field.field.widget.input_type }}"
+      placeholder="{{field.field.widget.attrs.placeholder}}" />
+    {% endif %}
+  </div>
+
+  {% endfor %}
+
+
+  <div class="container-login100-form-btn">
+    <div class="wrap-login100-form-btn">
+      <div class="login100-form-bgbtn"></div>
+  <button class="login100-form-btn" type="submit">
+    SignUp
+  </button>
+  </div>
+  </div>
+</form>
+<div class="flex-col-c p-t-50">
+  <span class="txt1 p-b-17">
+    Already have an account
+  </span>
+
+  <a href="{% url 'login' %}" class="txt2">
+    Sign In
+  </a>
+  {% endblock %}

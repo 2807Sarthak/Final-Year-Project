@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% block content %}
+    <body
+    class="post-template-default single single-post postid-1016 single-format-standard wp-custom-logo has-sidebar-right elementor-default elementor-kit-2114">
+    
+    {% include 'intro.html' %}
+    <div id="content" class="site-content">
+        <div class="container main-content-area">
+
+            <div class="row">
+
+
+                <div class="main-content-inner col-sm-12 col-md-8 no-sidebar">
+
+                    <div id="primary" class="content-area">
+                        <main id="main" class="site-main" role="main">
+                            <article id="post-1016"
+                                class="post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+                                <div class="blog-item-wrap">
+                                    <div class="post-inner-content">
+                                        <header class="entry-header page-header">
+
+                                            <h1 class="entry-title">Book an Appointment</h1>
+                                            <div class="entry-meta"></div>
+
+                                        </header>
+                                        <div class="entry-content">
+    <form method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div>
+            {{ form.chosen_date.label_tag }} {{ form.chosen_date }}
+            {% if form.chosen_date.errors %}
+                <ul class="errorlist">
+                    {% for error in form.chosen_date.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        <div>
+            {{ form.chosen_time.label_tag }} {{ form.chosen_time }}
+            {% if form.chosen_time.errors %}
+                <ul class="errorlist">
+                    {% for error in form.chosen_time.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        <div>
+            {{ form.required_speciality.label_tag }} {{ form.required_speciality }}
+            {% if form.required_speciality.errors %}
+                <ul class="errorlist">
+                    {% for error in form.required_speciality.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        <input type="hidden" name="doctor_id" value="{{ doctor.id }}">
+        <button type="submit">Book Appointment</button>
+    </form>
+
+</div>
+</div>
+</div>
+</article>
+</main>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+    <!-- <h2>Available Slots</h2>
+    <ul>
+        {% for slot_date, slot_time in available_slots %}
+            <li>{{ slot_date }} at {{ slot_time }}</li>
+        {% endfor %}
+    </ul> -->
+
+    <!-- Add styling and additional content as needed -->
+<!-- </body> -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    // Get references to the date and time select fields
+    const dateField = document.querySelector('#id_chosen_date');
+    const timeField = document.querySelector('#id_chosen_time');
+    
+    // Add an event listener to the date field
+    dateField.addEventListener('change', function () {
+        // Get the selected date
+        const selectedDate = dateField.value;
+
+        // Get the doctor's ID from the hidden input field
+        const doctorId = document.querySelector('input[name="doctor_id"]').value;
+
+        // Make an AJAX request to fetch available time slots for the selected date
+        fetch(`/get_available_slots/?date=${selectedDate}&doctor_id=${doctorId}`)
+            .then(response => response.json())
+            .then(data => {
+                // Clear existing options
+                timeField.innerHTML = '';
+
+                // Add new options based on the fetched data
+                for (const slot of data.slots) {
+                    const option = document.createElement('option');
+                    option.value = slot;
+                    option.textContent = slot;
+                    timeField.appendChild(option);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching available slots:', error);
+            });
+    });
+    
+});
+
+    </script>
+      
+{% endblock %}
