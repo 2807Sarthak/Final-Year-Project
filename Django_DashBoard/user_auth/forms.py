@@ -20,10 +20,12 @@ class UserSignupForm(forms.ModelForm):
         self.fields['password_confirm'].widget.attrs.update({
             'placeholder':'confirm password'
         })
-        # self.fields['profile_picture'].widget.attrs.update({
-        #     'placeholder':'Select the profile Picture'
-        # })
-        Django_DashBoard / UserAuthProject / settings.py Django_DashBoard / user_auth / forms.py Django_DashBoard / user_auth / models.py Django_DashBoard / user_auth / templates / dashboard.html
+        self.fields['profile_picture'].widget.attrs.update({
+            'placeholder':'Select the profile Picture'
+        })
+        self.fields['profile_type'].widget.attrs.update({
+            'placeholder':'Select the profile type'
+        })
         self.fields['email'].widget.attrs.update({
             'placeholder':'xyz@example.com'
         })
@@ -44,7 +46,7 @@ class UserSignupForm(forms.ModelForm):
         })
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'username', 'email', 'password', 'password_confirm', 'address_line1', 'city', 'pincode']
+        fields = ['first_name', 'last_name', 'profile_type', 'profile_picture', 'username', 'email', 'password', 'password_confirm', 'address_line1', 'city', 'pincode']
 
 class BlogForm(forms.ModelForm):
 
@@ -66,7 +68,7 @@ from django.utils.timezone import now
 class BookingForm(forms.ModelForm):
     class Meta:
         model = Appointment
-        fields = ['chosen_date', 'chosen_time','required_speciality']
+        fields = ['chosen_date', 'chosen_time','required_speciality','patient_docs','patient_desc']
 
     def __init__(self, doctor, paitent, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -77,6 +79,8 @@ class BookingForm(forms.ModelForm):
         self.fields['chosen_date'].widget = forms.DateInput(attrs={'type': 'date', 'id': 'id_chosen_date','min': min_date,'max':max_date})
         self.fields['chosen_date'].initial = min_date
         self.fields['chosen_time'].widget = forms.Select(choices=self.get_available_slots())
+        self.fields['patient_docs'].label = "Patient Docs (if any)"
+        self.fields['patient_desc'].label = "Patient Description"
 
     def get_available_slots(self):
         chosen_date = self.data.get('chosen_date') or (datetime.date.today()+ datetime.timedelta(days=1))
