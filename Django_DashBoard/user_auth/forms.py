@@ -23,7 +23,7 @@ class UserSignupForm(forms.ModelForm):
         # self.fields['profile_picture'].widget.attrs.update({
         #     'placeholder':'Select the profile Picture'
         # })
-        Django_DashBoard / UserAuthProject / settings.py Django_DashBoard / user_auth / forms.py Django_DashBoard / user_auth / models.py Django_DashBoard / user_auth / templates / dashboard.html
+        
         self.fields['email'].widget.attrs.update({
             'placeholder':'xyz@example.com'
         })
