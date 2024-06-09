@@ -9,7 +9,7 @@ class User(AbstractUser):
         ('doctor', 'Doctor'),
     )
     
-    profile_type = models.CharField(max_length=10, choices=PROFILE_CHOICES)
+    profile_type = models.CharField(max_length=10, choices=PROFILE_CHOICES, default = 'patient')
     profile_picture = models.ImageField(upload_to='profile_pics/')
     address_line1 = models.CharField(max_length=100)
     city = models.CharField(max_length=50)
