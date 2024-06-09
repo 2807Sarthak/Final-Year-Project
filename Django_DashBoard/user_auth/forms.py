@@ -68,7 +68,7 @@ from django.utils.timezone import now
 class BookingForm(forms.ModelForm):
     class Meta:
         model = Appointment
-        fields = ['chosen_date', 'chosen_time','required_speciality']
+        fields = ['chosen_date', 'chosen_time','required_speciality','patient_docs','patient_desc']
 
     def __init__(self, doctor, paitent, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -79,6 +79,8 @@ class BookingForm(forms.ModelForm):
         self.fields['chosen_date'].widget = forms.DateInput(attrs={'type': 'date', 'id': 'id_chosen_date','min': min_date,'max':max_date})
         self.fields['chosen_date'].initial = min_date
         self.fields['chosen_time'].widget = forms.Select(choices=self.get_available_slots())
+        self.fields['patient_docs'].label = "Patient Docs (if any)"
+        self.fields['patient_desc'].label = "Patient Description"
 
     def get_available_slots(self):
         chosen_date = self.data.get('chosen_date') or (datetime.date.today()+ datetime.timedelta(days=1))

@@ -293,31 +293,40 @@ import datetime
 def booking_view(request, slug):
     doctor = User.objects.get(id=slug)
     
-    if request.method == 'POST':
+    if request.method == 'POST' and request.user.profile_type == 'doctor':
         form = BookingForm(doctor,request.user, request.POST)
         if form.is_valid():
             
             chosen_date = form.cleaned_data['chosen_date']
             chosen_time = form.cleaned_data['chosen_time']
 
-
             booked_appointments = Appointment.objects.filter(
             doctor=doctor,
             chosen_date=chosen_date,
             chosen_time=chosen_time
             )
-            if booked_appointments:
-                form = BookingForm(doctor)
-                return render(request, 'booking', {'form': form, 'doctor': doctor})
-
             slot_duration = datetime.datetime.strptime('00:45', '%H:%M')
             end_datetime = datetime.datetime.combine(chosen_date, chosen_time) + datetime.timedelta(minutes=45)
             end_time = end_datetime
 
             appointment = form.save(commit=False)
-            appointment.doctor = doctor
-            appointment.patient = request.user
+            appointment.doctor = request.user
             appointment.end_time = end_time.time()
+            if booked_appointments:
+                form = BookingForm(doctor)
+                return render(request, 'booking', {'form': form, 'doctor': doctor})
+
+    if request.method == 'POST' and request.user.profile_type == 'patient':        
+            
+            patient_docs = form.cleaned_data['patient_docs']
+            patient_desc = form.cleaned_data['patient_desc']
+            required_speciality = form.cleaned_data['required_speciality']
+
+            appointment.patient = request.user
+            appointment.patient_docs= patient_docs
+            appointment.patient_desc = patient_desc
+            appointment.required_speciality = required_speciality
+
             if create_google_calendar_event(appointment):
                 form = BookingForm(doctor,request.user)
 
@@ -330,7 +339,7 @@ def booking_view(request, slug):
     else:
         form = BookingForm(doctor,request.user)
 
-    return render(request, 'booking.html', {'form': form, 'doctor': doctor})
+    return render(request, 'booking.html', {'form': form , 'user':request.user})
 
 
 from user_auth.models import User
@@ -404,3 +413,10 @@ def appointment(request):
         ).order_by('-id')[:30]
 
     return render(request, 'list_appointments.html',{'appointments':appointments})
+
+@login_required(login_url='login')
+def filter_appointment(request):
+    if request.user_profile_type =='doctor':
+         appointments = Appointment.objects.filter(
+            Q(required_speciality=request.user.speciality) AND Q(doctor=None)
+        ).order_by('-id')[:30]

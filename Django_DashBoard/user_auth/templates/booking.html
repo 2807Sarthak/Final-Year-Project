@@ -9,7 +9,6 @@
 
             <div class="row">
 
-
                 <div class="main-content-inner col-sm-12 col-md-8 no-sidebar">
 
                     <div id="primary" class="content-area">
@@ -27,7 +26,9 @@
                                         <div class="entry-content">
     <form method="post">
         {% csrf_token %}
+        {% if user.profile_type == 'doctor' %}
         {{ form.non_field_errors }}
+        
         <div>
             {{ form.chosen_date.label_tag }} {{ form.chosen_date }}
             {% if form.chosen_date.errors %}
@@ -38,6 +39,7 @@
                 </ul>
             {% endif %}
         </div>
+        
         <div>
             {{ form.chosen_time.label_tag }} {{ form.chosen_time }}
             {% if form.chosen_time.errors %}
@@ -48,6 +50,30 @@
                 </ul>
             {% endif %}
         </div>
+        {% endif %}
+
+        <div>
+            {{ form.patient_docs.label_tag }} {{ form.patient_docs}}
+            {% if form.patient_docs.errors %}
+                <ul class="errorlist">
+                    {% for error in form.patient_docs.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div>
+            {{ form.patient_desc.label_tag }} {{ form.patient_desc}}
+            {% if form.patient_desc.errors %}
+                <ul class="errorlist">
+                    {% for error in form.patient_desc.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
         <div>
             {{ form.required_speciality.label_tag }} {{ form.required_speciality }}
             {% if form.required_speciality.errors %}
