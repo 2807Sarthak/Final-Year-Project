@@ -14,10 +14,13 @@ urlpatterns = [
     path('category', views.category, name='category'),
     path('self_blog', views.self_blogs, name = 'self_blog'),
     # path ('event', views.events, name= 'event'),
-    path('book/<str:slug>',views.booking_view,name='book'),
+    path('book',views.booking_view,name='book'),
     path('A_detail/<str:slug>',views.A_detail, name='A_detail'),
     path('doc',views.list_doctors,name='doc'),
     path('appointments', views.appointment, name= 'appointment'),
-    path('get_available_slots/', views.get_available_slots,name='available')
+    path('get_available_slots/', views.get_available_slots,name='available'),
+    path('appointment_requests/', views.filter_appointment,name='appointment_request'),
+    path('appointment_accept/<str:slug>', views.appointment_accept,name='appointment_accept'),
+    path('peerchat/<str:slug>', views.meeting_link,name='meeting_link')
     # path('appointment',views.AD,name= 'A_detail')
 ]

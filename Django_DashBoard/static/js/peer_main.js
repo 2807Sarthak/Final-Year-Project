@@ -9,7 +9,7 @@ let channel;
 
 let queryString = location.search
 let urlParams = new URLSearchParams(queryString)
-let roomId = urlParams.get('room')
+let roomId = urlParams.get('{{ room }}')
 
 if(!roomId){
     window.location = 'lobby.html'
