@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<!-- html for only index page -->
+
+<body class="home blog wp-custom-logo has-sidebar-right half-posts elementor-default elementor-kit-2114">
+
+    {% include 'intro.html' %}
+
+	<div id="content" class="site-content">
+
+		<div class="top-section"></div>
+		<div class="container main-content-area">
+			<div class="row">
+
+
+
+                                <style>
+                                    .container-table {
+                                                display: flex;
+                                                justify-content: center; /* Horizontally center */
+                                                align-items: center; /* Vertically center */
+
+                                            }
+                                    table {
+                                        border-collapse: collapse;
+                                        width: 65%;
+                                    }
+                                
+                                    th, td {
+                                        border: 1px solid #ddd;
+                                        padding: 8px;
+                                        text-align: center;
+                                    }
+                                
+                                    th {
+                                        background-color: #f2f2f2;
+                                    }
+                                
+                                    tr:hover {
+                                        background-color: #f5f5f5;
+                                    }
+                                </style>
+                                <div class="container-table">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Serial No.</th>
+                                            <th>Appointment</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for appointment in appointments %}
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>Dr. {{ appointment.doctor.first_name }}  {{ appointment.doctor.last_name }} Appointment with Patient {{ appointment.patient.first_name }}  {{ appointment.patient.last_name }}</td>
+                                                <td>
+                                                    <a href="{% url 'A_detail' appointment.id %}">View Details</a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                </div>
+
+		</div>
+	</div>
+	</div>
+
+
+
+	{% endblock %}

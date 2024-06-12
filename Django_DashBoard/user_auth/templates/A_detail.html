@@ -34,7 +34,7 @@
 																		padding-bottom: 30px;
 																		">
 											<header class="entry-header page-header">
-                            <h1 class="entry-title">Appointment for Doctor: {{appointment.doctor}} </h1>
+                            <h1 class="entry-title">Appointment for Patient: {{appointment.patient}} </h1>
 									
                             </header>
                         
@@ -45,6 +45,17 @@
                                 <p>
                                     <center>Required Speciality: {{appointment.required_speciality}}</center>
                                 </p>
+                                {% if appointment.patient_docs %}
+                                <p>
+                                    <center> Patient documents: {{appointment.patient_docs}}</center>
+                                </p>
+                                {% endif %}
+                                <p>
+                                    <center> Appointment description: {{appointment.patient_desc}}</center>
+                                </p>
+
+                                
+                                {% if appointment.doctor %}
                                 <p>
                                     <center>Appointment Date: {{appointment.chosen_date}}</center>
                                 </p>
@@ -57,6 +68,14 @@
                                 <p>
                                     <center>Google Calendar Event: <a href="{{ appointment.google_url }}"> URL </center>
                                 </p>
+                                <p>
+                                    <center>Meeting Link: <a href="{{ appointment.meeting_url }}"> URL </center>
+                                </p>
+                                {% elif request.user.profile_type == 'doctor' %}
+                                <p>
+                                    <center> <a href="{% url 'appointment_accept' appointment.id %}"> Accept </center>
+                                </p>
+                                {% endif %}
 
                             </div>
                         </div>

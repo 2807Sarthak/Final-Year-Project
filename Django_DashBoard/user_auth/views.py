@@ -9,6 +9,8 @@ from user_auth.decorators import patient_required, doctor_required
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
 # utility functions
 
@@ -248,96 +250,98 @@ from googleapiclient.discovery import build
 
 def create_google_calendar_event(appointment):
     # Load OAuth 2.0 credentials
-    credentials = service_account.Credentials.from_service_account_file(
-        'user_auth/credentials.json',
-        scopes=['https://www.googleapis.com/auth/calendar']
-    )
+    # credentials = service_account.Credentials.from_service_account_file(
+    #     'user_auth/credentials.json',
+    #     scopes=['https://www.googleapis.com/auth/calendar']
+    # )
 
-    # Create a Google Calendar API service
-    service = build('calendar', 'v3', credentials=credentials)
+    # # Create a Google Calendar API service
+    # service = build('calendar', 'v3', credentials=credentials)
     
-    event_end_datetime = datetime.datetime.combine(appointment.chosen_date, appointment.end_time)
-    event_end_datetime_str = event_end_datetime.strftime('%Y-%m-%dT%H:%M:%S')
+    # event_end_datetime = datetime.datetime.combine(appointment.chosen_date, appointment.end_time)
+    # event_end_datetime_str = event_end_datetime.strftime('%Y-%m-%dT%H:%M:%S')
 
-    event_start_datetime = datetime.datetime.combine(appointment.chosen_date, appointment.chosen_time)
-    event_start_datetime_str = event_start_datetime.strftime('%Y-%m-%dT%H:%M:%S')
-    # Define event details
-    event = {
-        'summary': f'Appointment with Dr {appointment.doctor.first_name} {appointment.doctor.last_name} and Patient {appointment.patient.first_name} {appointment.patient.last_name}',
-        'description': 'Appointment with Dr. {}'.format(appointment.doctor),
-        'start': {
-            'dateTime': event_start_datetime_str,
-            'timeZone': 'IST',
-        },
-        'end': {
-            'dateTime': event_end_datetime_str,
-            'timeZone': 'IST',
-        }
-        # 'attendees': [
-        #     {'email': appointment.doctor.email},
-        #     {'email': appointment.patient.email},
-        # ],
-    }
+    # event_start_datetime = datetime.datetime.combine(appointment.chosen_date, appointment.chosen_time)
+    # event_start_datetime_str = event_start_datetime.strftime('%Y-%m-%dT%H:%M:%S')
+    # # Define event details
+    # event = {
+    #     'summary': f'Appointment with Dr {appointment.doctor.first_name} {appointment.doctor.last_name} and Patient {appointment.patient.first_name} {appointment.patient.last_name}',
+    #     'description': 'Appointment with Dr. {}'.format(appointment.doctor),
+    #     'start': {
+    #         'dateTime': event_start_datetime_str,
+    #         'timeZone': 'IST',
+    #     },
+    #     'end': {
+    #         'dateTime': event_end_datetime_str,
+    #         'timeZone': 'IST',
+    #     }
+    #     # 'attendees': [
+    #     #     {'email': appointment.doctor.email},
+    #     #     {'email': appointment.patient.email},
+    #     # ],
+    # }
 
-    # Create the event
-    event = service.events().insert(calendarId='{Google API key}', body=event).execute()
-    if event.get('id'):
-        appointment.google_url = event.get("htmlLink")
-        return False
-    return True
+    # # Create the event
+    # event = service.events().insert(calendarId='{Google API key}', body=event).execute()
+    # if event.get('id'):
+    #     appointment.google_url = event.get("htmlLink")
+    #     return False
+    return False
 
 
 from .forms import BookingForm
 import datetime
 
-def booking_view(request, slug):
-    doctor = User.objects.get(id=slug)
+def booking_view(request):
+    # doctor = User.objects.get(id=slug)
     
-    if request.method == 'POST' and request.user.profile_type == 'doctor':
-        form = BookingForm(doctor,request.user, request.POST)
-        if form.is_valid():
+    # if request.method == 'POST' and request.user.profile_type == 'doctor':
+    #     form = BookingForm(doctor,request.user, request.POST)
+    #     if form.is_valid():
             
-            chosen_date = form.cleaned_data['chosen_date']
-            chosen_time = form.cleaned_data['chosen_time']
+    #         chosen_date = form.cleaned_data['chosen_date']
+    #         chosen_time = form.cleaned_data['chosen_time']
 
-            booked_appointments = Appointment.objects.filter(
-            doctor=doctor,
-            chosen_date=chosen_date,
-            chosen_time=chosen_time
-            )
-            slot_duration = datetime.datetime.strptime('00:45', '%H:%M')
-            end_datetime = datetime.datetime.combine(chosen_date, chosen_time) + datetime.timedelta(minutes=45)
-            end_time = end_datetime
+    #         booked_appointments = Appointment.objects.filter(
+    #         doctor=doctor,
+    #         chosen_date=chosen_date,
+    #         chosen_time=chosen_time
+    #         )
+    #         slot_duration = datetime.datetime.strptime('00:45', '%H:%M')
+    #         end_datetime = datetime.datetime.combine(chosen_date, chosen_time) + datetime.timedelta(minutes=45)
+    #         end_time = end_datetime
 
-            appointment = form.save(commit=False)
-            appointment.doctor = request.user
-            appointment.end_time = end_time.time()
-            if booked_appointments:
-                form = BookingForm(doctor)
-                return render(request, 'booking', {'form': form, 'doctor': doctor})
+    #         appointment = form.save(commit=False)
+    #         appointment.doctor = request.user
+    #         appointment.end_time = end_time.time()
+    #         if booked_appointments:
+    #             form = BookingForm(doctor)
+    #             return render(request, 'booking', {'form': form, 'doctor': doctor})
 
-    if request.method == 'POST' and request.user.profile_type == 'patient':        
-            
+    if request.method == 'POST' and request.user.profile_type == 'patient':
+            form = BookingForm(None,request.user, request.POST)
+        # if form.is_valid():        
+            print(form)
             patient_docs = form.cleaned_data['patient_docs']
             patient_desc = form.cleaned_data['patient_desc']
             required_speciality = form.cleaned_data['required_speciality']
-
+            appointment = form.save(commit=False)
             appointment.patient = request.user
             appointment.patient_docs= patient_docs
             appointment.patient_desc = patient_desc
             appointment.required_speciality = required_speciality
 
-            if create_google_calendar_event(appointment):
-                form = BookingForm(doctor,request.user)
+            # if create_google_calendar_event(appointment):
+            #     form = BookingForm(doctor,request.user)
 
-                return render(request, 'booking.html', {'form': form, 'doctor': doctor})
+            #     return render(request, 'booking.html', {'form': form, 'doctor': doctor})
                 
             appointment.save()
             
             # Redirect or show a success message
             return redirect( 'A_detail', slug = appointment.id)
     else:
-        form = BookingForm(doctor,request.user)
+        form = BookingForm(doctor=None,paitent=request.user)
 
     return render(request, 'booking.html', {'form': form , 'user':request.user})
 
@@ -394,7 +398,7 @@ def calculate_available_slots(selected_date, doctor,paitent):
 def A_detail(request,slug):
     appointment = Appointment.objects.get(id=slug)
 
-    if request.user != appointment.doctor and request.user != appointment.patient:
+    if request.user != appointment.doctor and request.user != appointment.patient and request.user.speciality!=appointment.required_speciality:
         return HttpResponse('You are not allowed here')
 
     return render(request,'A_detail.html',{ 'appointment' : appointment})
@@ -416,7 +420,131 @@ def appointment(request):
 
 @login_required(login_url='login')
 def filter_appointment(request):
-    if request.user_profile_type =='doctor':
+    if request.user.profile_type =='doctor':
          appointments = Appointment.objects.filter(
-            Q(required_speciality=request.user.speciality) AND Q(doctor=None)
-        ).order_by('-id')[:30]
+            Q(required_speciality=request.user.speciality) & Q(doctor=None)
+        ).order_by('-id')
+    return render(request, 'appointments_request.html', {'appointments': appointments})
+
+import uuid
+
+@doctor_required
+def appointment_accept(request, slug):
+    page = 'update'
+    appointment = Appointment.objects.get(pk=slug)
+    patient = appointment.patient
+    print(appointment,'fkldjlfdjl')
+
+    if request.user.speciality != appointment.required_speciality:
+        return HttpResponse('You are not allowed here')
+    
+    if request.method == 'POST' and request.user.profile_type == 'doctor':
+        form = BookingForm(request.user,appointment.patient, request.POST)
+        if form.is_valid():
+            
+            chosen_date = form.cleaned_data['chosen_date']
+            chosen_time = form.cleaned_data['chosen_time']
+
+            booked_appointments = Appointment.objects.filter(
+            doctor=request.user,
+            chosen_date=chosen_date,
+            chosen_time=chosen_time
+            )
+            slot_duration = datetime.datetime.strptime('00:45', '%H:%M')
+            end_datetime = datetime.datetime.combine(chosen_date, chosen_time) + datetime.timedelta(minutes=45)
+            end_time = end_datetime
+
+            appointment = form.save(commit=False)
+            appointment.doctor = request.user
+            appointment.patient = patient
+
+            appointment.end_time = end_time.time()
+            if booked_appointments:
+                form = BookingForm(appointment.doctor)
+                return render(request, 'booking', {'form': form, 'doctor': appointment.doctor})
+            slot_duration = datetime.datetime.strptime('00:45', '%H:%M')
+            end_datetime = datetime.datetime.combine(chosen_date, chosen_time) + datetime.timedelta(minutes=45)
+            end_time = end_datetime
+
+            appointment.doctor = request.user
+            appointment.end_time = end_time.time()
+            if create_google_calendar_event(appointment):
+                form = BookingForm(request.user,request.user)
+
+                return render(request, 'booking.html', {'form': form, 'doctor': request.user})
+
+            room_id = 'docm_' + str(uuid.uuid4().hex)[:8]  # Generate unique room ID with prefix 'docm'
+            appointment.meeting_url = request.build_absolute_uri('/')[:-1]+f"/peerchat/{room_id}" 
+
+            appointment.save()
+            
+            
+            # Redirect or show a success message
+            return redirect( 'A_detail', slug = appointment.id)
+    else:
+        form = BookingForm(doctor=request.user,paitent=appointment.patient,instance=appointment)
+
+    context = {'form': form, 'appointment': appointment, 'page': page}
+    return render(request, 'booking.html', context)
+
+
+@login_required
+def meeting_link(request,slug):
+
+    return HttpResponseRedirect(reverse('home')+'user_auth/templates/PeerChat/index.html'+f'?room={slug}')
+
+
+
+
+
+# @doctor_required
+# def appointment_accept(request, slug):
+#     page = 'update'
+#     appointment = Appointment.objects.get(pk=slug)
+#     patient = appointment.patient
+
+#     if request.user.speciality != appointment.required_speciality:
+#         return HttpResponse('You are not allowed here')
+    
+#     if request.method == 'POST' and request.user.profile_type == 'doctor':
+#         form = BookingForm(request.user,appointment.patient, request.POST)
+#         if form.is_valid():
+#             chosen_date = form.cleaned_data['chosen_date']
+#             chosen_time = form.cleaned_data['chosen_time']
+
+#             booked_appointments = Appointment.objects.filter(
+#                 doctor=request.user,
+#                 chosen_date=chosen_date,
+#                 chosen_time=chosen_time
+#             )
+
+#             slot_duration = datetime.datetime.strptime('00:45', '%H:%M')
+#             end_datetime = datetime.datetime.combine(chosen_date, chosen_time) + datetime.timedelta(minutes=45)
+#             end_time = end_datetime
+
+#             appointment = form.save(commit=False)
+#             appointment.doctor = request.user
+#             appointment.patient = patient
+#             appointment.end_time = end_time.time()
+
+#             if booked_appointments:
+#                 form = BookingForm(appointment.doctor)
+#                 return render(request, 'booking', {'form': form, 'doctor': appointment.doctor})
+            
+#             if create_google_calendar_event(appointment):
+#                 form = BookingForm(request.user,request.user)
+#                 return render(request, 'booking.html', {'form': form, 'doctor': request.user})
+                
+#             # Generate unique room ID
+#             room_id = 'docm_' + str(uuid.uuid4().hex)[:8]  # Generate unique room ID with prefix 'docm'
+#             appointment.room_id = room_id
+
+#             appointment.save()
+            
+#             # Redirect or show a success message
+#             return redirect('A_detail', slug=appointment.id)
+#     else:
+#         form = BookingForm(doctor=request.user,paitent=appointment.patient,instance=appointment)
+
+#     context = {'form': form, 'appointment': appointment, 'page': page}
+#     return render(request, 'booking.html', context)
