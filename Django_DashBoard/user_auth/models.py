@@ -27,6 +27,7 @@ class User(AbstractUser):
 
 
 # Category Model
+
 class Category(models.Model):
     name = models.CharField(max_length=200)
 
@@ -34,6 +35,7 @@ class Category(models.Model):
         return self.name
 
 # Blog Model
+
 class Blog(models.Model):
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
@@ -53,7 +55,6 @@ class Blog(models.Model):
         return ' '.join(words)
 
         
-
 
 class Appointment(models.Model):
     patient = models.ForeignKey(User, on_delete=models.CASCADE)
