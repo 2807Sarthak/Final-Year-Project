@@ -250,43 +250,42 @@ from googleapiclient.discovery import build
 
 def create_google_calendar_event(appointment):
     # Load OAuth 2.0 credentials
-    # credentials = service_account.Credentials.from_service_account_file(
-    #     'user_auth/credentials.json',
-    #     scopes=['https://www.googleapis.com/auth/calendar']
-    # )
+    credentials = service_account.Credentials.from_service_account_file(
+        'user_auth/credentials.json',
+        scopes=['https://www.googleapis.com/auth/calendar']
+    )
 
-    # # Create a Google Calendar API service
-    # service = build('calendar', 'v3', credentials=credentials)
+    # Create a Google Calendar API service
+    service = build('calendar', 'v3', credentials=credentials)
     
-    # event_end_datetime = datetime.datetime.combine(appointment.chosen_date, appointment.end_time)
-    # event_end_datetime_str = event_end_datetime.strftime('%Y-%m-%dT%H:%M:%S')
+    event_end_datetime = datetime.datetime.combine(appointment.chosen_date, appointment.end_time)
+    event_end_datetime_str = event_end_datetime.strftime('%Y-%m-%dT%H:%M:%S')
 
-    # event_start_datetime = datetime.datetime.combine(appointment.chosen_date, appointment.chosen_time)
-    # event_start_datetime_str = event_start_datetime.strftime('%Y-%m-%dT%H:%M:%S')
-    # # Define event details
-    # event = {
-    #     'summary': f'Appointment with Dr {appointment.doctor.first_name} {appointment.doctor.last_name} and Patient {appointment.patient.first_name} {appointment.patient.last_name}',
-    #     'description': 'Appointment with Dr. {}'.format(appointment.doctor),
-    #     'start': {
-    #         'dateTime': event_start_datetime_str,
-    #         'timeZone': 'IST',
-    #     },
-    #     'end': {
-    #         'dateTime': event_end_datetime_str,
-    #         'timeZone': 'IST',
-    #     }
-    #     # 'attendees': [
-    #     #     {'email': appointment.doctor.email},
-    #     #     {'email': appointment.patient.email},
-    #     # ],
-    # }
+    event_start_datetime = datetime.datetime.combine(appointment.chosen_date, appointment.chosen_time)
+    event_start_datetime_str = event_start_datetime.strftime('%Y-%m-%dT%H:%M:%S')
+    # Define event details
+    event = {
+        'summary': f'Appointment with Dr {appointment.doctor.first_name} {appointment.doctor.last_name} and Patient {appointment.patient.first_name} {appointment.patient.last_name}',
+        'description': 'Appointment with Dr. {}'.format(appointment.doctor),
+        'start': {
+            'dateTime': event_start_datetime_str,
+            'timeZone': 'IST',
+        },
+        'end': {
+            'dateTime': event_end_datetime_str,
+            'timeZone': 'IST',
+        }
+        # 'attendees': [
+        #     {'email': appointment.doctor.email},
+        #     {'email': appointment.patient.email},
+        # ],
+    }
 
-    # # Create the event
-    # event = service.events().insert(calendarId='{Google API key}', body=event).execute()
-    # if event.get('id'):
-    #     appointment.google_url = event.get("htmlLink")
-    #     return False
-    return False
+    # Create the event
+    event = service.events().insert(calendarId='{Google API key}', body=event).execute()
+    if event.get('id'):
+        appointment.google_url = event.get("htmlLink")
+        return False
 
 
 from .forms import BookingForm
@@ -363,7 +362,7 @@ from django.http import JsonResponse
 def get_available_slots(request):
     selected_date = request.GET.get('date')  
     # print(request.GET.get('doctor_id'))
-    doctor = User.objects.get(id=request.GET.get('doctor_id'))
+    doctor = User.objects.get(id=request.user.id)
 
     available_slots = calculate_available_slots(selected_date,doctor,request.user)
     return JsonResponse({'slots': available_slots})
@@ -433,6 +432,7 @@ def appointment_accept(request, slug):
     page = 'update'
     appointment = Appointment.objects.get(pk=slug)
     patient = appointment.patient
+
     print(appointment,'fkldjlfdjl')
 
     if request.user.speciality != appointment.required_speciality:
@@ -453,10 +453,13 @@ def appointment_accept(request, slug):
             slot_duration = datetime.datetime.strptime('00:45', '%H:%M')
             end_datetime = datetime.datetime.combine(chosen_date, chosen_time) + datetime.timedelta(minutes=45)
             end_time = end_datetime
-
-            appointment = form.save(commit=False)
+            form = form.cleaned_data
+            appointment.chosen_date = form['chosen_date']
+            appointment.chosen_time = form['chosen_time']
+            appointment.required_speciality = form['required_speciality']
+            appointment.patient_docs = form['patient_docs']
+            appointment.patient_desc = form['patient_desc']
             appointment.doctor = request.user
-            appointment.patient = patient
 
             appointment.end_time = end_time.time()
             if booked_appointments:
@@ -466,7 +469,6 @@ def appointment_accept(request, slug):
             end_datetime = datetime.datetime.combine(chosen_date, chosen_time) + datetime.timedelta(minutes=45)
             end_time = end_datetime
 
-            appointment.doctor = request.user
             appointment.end_time = end_time.time()
             if create_google_calendar_event(appointment):
                 form = BookingForm(request.user,request.user)
@@ -490,8 +492,9 @@ def appointment_accept(request, slug):
 
 @login_required
 def meeting_link(request,slug):
-
-    return HttpResponseRedirect(reverse('home')+'user_auth/templates/PeerChat/index.html'+f'?room={slug}')
+    current_url = request.build_absolute_uri()
+    redirecting_url = current_url.replace('peerchat','user_auth/templates/PeerChat/index.html'+f'?room={slug}')
+    return redirect(redirecting_url)
 
 
 

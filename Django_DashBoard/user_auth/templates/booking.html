@@ -116,8 +116,10 @@
     
     // Add an event listener to the date field
     dateField.addEventListener('change', function () {
+        
         // Get the selected date
         const selectedDate = dateField.value;
+        console.log(selectedDate); 
 
         // Get the doctor's ID from the hidden input field
         const doctorId = document.querySelector('input[name="doctor_id"]').value;
